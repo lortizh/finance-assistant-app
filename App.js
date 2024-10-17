@@ -1,20 +1,37 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+// App.js en React Native - app-login-aws
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 
-export default function App() {
+import ChatScreen from "./src/components/ChatScreen";
+
+/** IMPORTS PARA AMPLIFY*/
+import { Amplify, Auth } from 'aws-amplify';
+import awsconfig from './src/aws-exports';
+import { withAuthenticator } from 'aws-amplify-react-native';
+Amplify.configure(awsconfig);
+
+const App = () => {
+	
+	const Stack = createStackNavigator();
+  
+  async function signOut() {
+		try {
+			await Auth.signOut();
+		} catch (error) {
+			console.log(error);
+		}
+	}	
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Chat">
+        <Stack.Screen name="Chat" component={ChatScreen} />
+      </Stack.Navigator>
+      <button onClick={signOut}> Salir </button>
+    </NavigationContainer>
   );
-}
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+
+};
+
+export default withAuthenticator(App);
