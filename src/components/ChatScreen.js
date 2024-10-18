@@ -75,6 +75,9 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#fff',
   },
+  Button: {
+    backgroundColor: '#FFA500'
+  },
   chatContainer: {
     flex: 1,
   },

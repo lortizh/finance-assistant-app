@@ -25,7 +25,7 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Chat">
-        <Stack.Screen name="Chat" component={ChatScreen} />
+        <Stack.Screen name="Asistente Financiero" component={ChatScreen} />
       </Stack.Navigator>
       <button onClick={signOut}> Salir </button>
     </NavigationContainer>
