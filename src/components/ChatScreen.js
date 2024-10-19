@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, FlatList, Text, StyleSheet } from 'react-native';
 
+import { API_URL } from '@env';
+import { API_KEY } from '@env';
+console.log(API_URL);  // Esto imprimirá la URL definida en tu archivo .env
+
+
 const ChatScreen = () => {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
-  const apiUrl= process.env.REACT_APP_API_URL;
-  const apiKey = process.env.REACT_APP_API_KEY;
   
   const sendMessage = async () => {
     console.info("::: sendMessage :::");
@@ -19,22 +22,22 @@ const ChatScreen = () => {
         // Your request body data
         pregunta: inputText
       };
-      console.info("::: Request Body :::", requestBody);
+      console.log("::: Request Body :::", requestBody);
       console.info("<<<>>>");
       // Llamar a la API de IA (suponiendo que uses OpenAI u otra API similar)
       try {
-        const response = await fetch(apiUrl, {
+        const response = await fetch(API_URL, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-functions-key': apiKey, // Aquí va tu API key de OpenAI
+            'x-functions-key': API_KEY, // Aquí va tu API key de OpenAI
           },
           body: JSON.stringify(requestBody),
         });
         
         const data = await response.json();
         const aiResponse = data.respuesta;
-        console.info("::: AI Response :::", aiResponse);
+        console.log("::: AI Response :::", aiResponse);
 
         // Agregar respuesta de IA al estado
         setMessages([...newMessages, { text: aiResponse, sender: 'ai' }]);
