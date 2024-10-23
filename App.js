@@ -2,6 +2,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { Image, View, Button, Text } from 'react-native'; // Importa el componente Image
 
 import ChatScreen from "./src/components/ChatScreen";
 
@@ -25,7 +26,22 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Chat">
-        <Stack.Screen name="Asistente Financiero" component={ChatScreen} />
+        <Stack.Screen name="Chat" component={ChatScreen} 
+			options={{
+        headerTitle: () => (
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            {/* Título del asistente */}
+            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Money Mentor</Text>
+            
+            {/* Aquí se renderiza el logo */}
+            <Image
+              source={require('./src/assets/images/logo.png')} // Ruta a tu logo
+              style={{ width: 60, height: 60 }} // Ajusta el tamaño del logo
+            />
+          </View>
+        ),
+      }} 
+		/>
       </Stack.Navigator>
       <button onClick={signOut}> Salir </button>
     </NavigationContainer>

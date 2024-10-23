@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, FlatList, Text, StyleSheet } from 'react-native';
+import { View, TextInput, FlatList, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 import { API_URL } from '@env';
 import { API_KEY } from '@env';
-console.log(API_URL);  // Esto imprimirá la URL definida en tu archivo .env
 
 
 const ChatScreen = () => {
@@ -67,7 +66,9 @@ const ChatScreen = () => {
         value={inputText}
         onChangeText={setInputText}
       />
-      <Button title="Enviar" onPress={sendMessage} />
+      <TouchableOpacity style={styles.button} onPress={sendMessage}>
+        <Text style={styles.buttonText}>ENVIAR</Text>
+      </TouchableOpacity> 
     </View>
   );
 };
@@ -77,9 +78,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: '#fff',
-  },
-  Button: {
-    backgroundColor: '#FFA500'
   },
   chatContainer: {
     flex: 1,
@@ -104,6 +102,16 @@ const styles = StyleSheet.create({
   aiMessage: {
     alignSelf: 'flex-start',
     backgroundColor: '#f1f0f0',
+  },
+  button: {
+    backgroundColor: '#FFA500', // Cambia el color del botón aquí
+    paddingVertical: 10,
+    alignItems: 'center',
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
 
