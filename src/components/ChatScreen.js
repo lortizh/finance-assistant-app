@@ -29,7 +29,7 @@ const ChatScreen = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-functions-key': API_KEY, // Aquí va tu API key de OpenAI
+            'x-api-key': API_KEY, // Aquí va tu API key de OpenAI
           },
           body: JSON.stringify(requestBody),
         });
