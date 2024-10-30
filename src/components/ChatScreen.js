@@ -35,7 +35,12 @@ const ChatScreen = () => {
         });
         
         const data = await response.json();
-        const aiResponse = data.respuesta;
+        //const aiResponse = data;
+        const aiResponse = JSON.parse(data.body).respuesta;
+        
+        //const parsedData= JSON.parse(data);
+        //const aiResponse = parsedData.respuesta;
+        
         console.log("::: AI Response :::", aiResponse);
 
         // Agregar respuesta de IA al estado
