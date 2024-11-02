@@ -15,7 +15,7 @@
     "@react-native-picker/picker": "2.6.1",
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/stack": "^6.4.1",
-    "aws-amplify": "^5.3.16",
+    "aws-amplify": "^5.3.26",
     "aws-amplify-react-native": "^7.0.8",
     "build": "^0.1.4",
     "crypto-browserify": "^3.12.0",
