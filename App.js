@@ -9,7 +9,9 @@ Amplify.configure(awsconfig);
 import ChatScreen from "./src/components/ChatScreen";
 import SignUp from "./src/components/SignUp";  // El componente personalizado de SignUp
 import SignIn from "./src/components/SignIn";  // Otro componente personalizado de SignIn
-import ConfirmSignUp  from "./src/components/ConfirmSignUp";
+import ConfirmSignUp from "./src/components/ConfirmSignUp";
+import ForgotPassword from "./src/components/ForgotPassword";
+import ResetPassword from "./src/components/ResetPassword";
 
 const Stack = createStackNavigator();
 
@@ -30,23 +32,14 @@ const App = () => {
         }
     };
 
-    const signOut = async () => {
-        try {
-            await Auth.signOut();
-            setUser(null);
-        } catch (error) {
-            console.log("Error al cerrar sesión:", error);
-        }
-    };
-
     return (
         <NavigationContainer>
             <Stack.Navigator>
                 {user ? (
                     // Si el usuario está autenticado, muestra la pantalla de Chat y el botón de cerrar sesión
-                    <Stack.Screen 
-                        name="Chat" 
-                        component={ChatScreen} 
+                    <Stack.Screen
+                        name="ChatScreen"
+                        component={ChatScreen}
                         options={{
                             headerTitle: () => (
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -57,12 +50,13 @@ const App = () => {
                                     />
                                 </View>
                             ),
-                            /*
-                            headerRight: () => (
-                                <Button title="Cerrar sesión" onPress={signOut} />
-                            ),*/
+                            headerRight: () => (                                
+                                <Text style={{ fontSize: 20, fontWeight: 'bold' }}>By FinanceTeach</Text>
+                            ),
                         }}
+                
                     />
+
                 ) : (
                     // Si el usuario no está autenticado, muestra las pantallas de SignUp o SignIn
                     <>
@@ -73,10 +67,12 @@ const App = () => {
                             {(props) => <SignUp {...props} onSignUpSuccess={() => props.navigation.navigate("SignIn")} />}
                         </Stack.Screen>
                         <Stack.Screen name="ConfirmSignUp" component={ConfirmSignUp} />
+                        <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+                        <Stack.Screen name="ResetPassword" component={ResetPassword} />
                     </>
                 )}
             </Stack.Navigator>
-            <button onClick={signOut}> Salir </button>
+
         </NavigationContainer>
     );
 };

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { View, TextInput, FlatList, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TextInput, FlatList, Text, TouchableOpacity, StyleSheet, Button } from 'react-native';
+import { Auth } from 'aws-amplify';
+import { useNavigation } from '@react-navigation/native';
 
 import { API_URL } from '@env';
 import { API_KEY } from '@env';
@@ -8,7 +10,18 @@ import { API_KEY } from '@env';
 const ChatScreen = () => {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
-  
+
+  const navigation = useNavigation(); // Hook para la navegación
+
+  const signOut = async () => {
+    try {
+      await Auth.signOut();
+      window.location.reload(); // Forza una recarga completa para reiniciar la aplicación
+    } catch (error) {
+      console.log("Error al cerrar sesión:", error);
+    }
+  };
+
   const sendMessage = async () => {
     console.info("::: sendMessage :::");
     if (inputText.trim()) {
@@ -33,14 +46,14 @@ const ChatScreen = () => {
           },
           body: JSON.stringify(requestBody),
         });
-        
+
         const data = await response.json();
         //const aiResponse = data;
         const aiResponse = JSON.parse(data.body).respuesta;
-        
+
         //const parsedData= JSON.parse(data);
         //const aiResponse = parsedData.respuesta;
-        
+
         console.log("::: AI Response :::", aiResponse);
 
         // Agregar respuesta de IA al estado
@@ -73,7 +86,13 @@ const ChatScreen = () => {
       />
       <TouchableOpacity style={styles.button} onPress={sendMessage}>
         <Text style={styles.buttonText}>ENVIAR</Text>
-      </TouchableOpacity> 
+      </TouchableOpacity>
+
+      {/* Footer con el botón de Cerrar sesión */}
+      <View style={styles.footer}>
+        <Button title="Cerrar sesión" onPress={signOut} />
+      </View>
+
     </View>
   );
 };
@@ -117,6 +136,13 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+  footer: {
+    marginTop: 10,
+    paddingVertical: 10,
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: '#ccc',
   },
 });
 
