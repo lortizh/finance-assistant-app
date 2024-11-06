@@ -90,7 +90,9 @@ const ChatScreen = () => {
 
       {/* Footer con el botón de Cerrar sesión */}
       <View style={styles.footer}>
-        <Button title="Cerrar sesión" onPress={signOut} />
+        <TouchableOpacity style={styles.signOutButton} onPress={signOut}>
+          <Text style={styles.signOutButtonText}>Cerrar sesión</Text>
+        </TouchableOpacity>
       </View>
 
     </View>
@@ -143,6 +145,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderTopWidth: 1,
     borderTopColor: '#ccc',
+  },
+  signOutButton: {
+    backgroundColor: '#FF6347', // Color de fondo personalizado
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  signOutButtonText: {
+    color: '#FFFFFF', // Color del texto
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

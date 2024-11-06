@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
+import { View, TextInput, Image, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Auth } from 'aws-amplify';
 
 const ConfirmSignUp = ({ navigation, route }) => {
@@ -19,6 +19,12 @@ const ConfirmSignUp = ({ navigation, route }) => {
 
     return (
         <View style={styles.container}>
+            {/* Agrega la imagen aquí */}
+            <Image
+                source={require('../assets/images/logo_signin.png')} // Reemplaza con la ruta de tu imagen
+                style={styles.logo}
+            />
+
             <Text style={styles.title}>Confirma tu cuenta</Text>
             <Text>Se envió un código de verificación a tu correo electrónico.</Text>
             <TextInput
@@ -28,8 +34,10 @@ const ConfirmSignUp = ({ navigation, route }) => {
                 style={styles.input}
                 keyboardType="numeric"
             />
-            {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
-            <Button title="Confirmar" onPress={handleConfirmSignUp} />
+            {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}            
+            <TouchableOpacity style={styles.button} onPress={handleConfirmSignUp}>
+                <Text style={styles.buttonText}>Confirmar</Text>
+            </TouchableOpacity>
         </View>
     );
 };
@@ -39,6 +47,22 @@ const styles = StyleSheet.create({
     title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
     input: { height: 40, borderColor: '#ccc', borderWidth: 1, marginBottom: 10, paddingHorizontal: 10 },
     error: { color: 'red', marginBottom: 10, textAlign: 'center' },
+    button: {
+        backgroundColor: '#FFA500', // Color naranja
+        paddingVertical: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+    },
+    buttonText: {
+        color: '#fff', // Color del texto en el botón
+        fontWeight: 'bold',
+    },
+    logo: {
+        width: 100, // Ajusta el ancho de la imagen según lo que necesites
+        height: 100, // Ajusta la altura de la imagen
+        alignSelf: 'center',
+        marginBottom: 20,
+    },
 });
 
 export default ConfirmSignUp;
