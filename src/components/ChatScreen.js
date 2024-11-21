@@ -4,7 +4,6 @@ import { Auth } from 'aws-amplify';
 import { useNavigation } from '@react-navigation/native';
 
 import { API_URL } from '@env';
-import { API_KEY } from '@env';
 
 
 const ChatScreen = () => {
@@ -24,6 +23,9 @@ const ChatScreen = () => {
 
   const sendMessage = async () => {
     console.info("::: sendMessage :::");
+    const session = await Auth.currentSession();
+    const idToken  = session.getIdToken().getJwtToken();
+
     if (inputText.trim()) {
       // Agregar el mensaje del usuario al estado
       const newMessages = [...messages, { text: inputText, sender: 'user' }];
@@ -42,21 +44,14 @@ const ChatScreen = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-api-key': API_KEY, // Aquí va tu API key de OpenAI
+            //'x-api-key': API_KEY, // Aquí va tu API key de OpenAI
+            "Authorization": `Bearer ${idToken}`
           },
           body: JSON.stringify(requestBody),
         });
 
         const data = await response.json();
-        //const aiResponse = data;
-        const aiResponse = JSON.parse(data.body).respuesta;
-
-        //const parsedData= JSON.parse(data);
-        //const aiResponse = parsedData.respuesta;
-
-        console.log("::: AI Response :::", aiResponse);
-
-        // Agregar respuesta de IA al estado
+        const aiResponse= data.respuesta;
         setMessages([...newMessages, { text: aiResponse, sender: 'ai' }]);
       } catch (error) {
         console.error("Error al interactuar con la IA:", error);

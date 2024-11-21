@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, CheckBox, Text, StyleSheet, TouchableOpacity, Linking, Image } from 'react-native';
 import { Auth } from 'aws-amplify';
+import { URL_PRIVACY_POLICY } from '@env';
+import { URL_CONSENTDATA_POLICY } from '@env';
 
 const SignUp = ({ navigation, onSignUpSuccess }) => {
     const [email, setEmail] = useState('');
@@ -55,7 +57,7 @@ const SignUp = ({ navigation, onSignUpSuccess }) => {
                     He leído y acepto la{" "}
                     <Text
                         style={styles.link}
-                        onPress={() => Linking.openURL('https://tu-dominio.com/politica-de-privacidad')}
+                        onPress={() => Linking.openURL(URL_PRIVACY_POLICY)}
                     >
                         Política de Privacidad
                     </Text>                    
@@ -64,7 +66,7 @@ const SignUp = ({ navigation, onSignUpSuccess }) => {
                 {" "} Y autorizo{" "}
                     <Text
                         style={styles.link}
-                        onPress={() => Linking.openURL('https://tu-dominio.com/tratamiento-datos-personales')}
+                        onPress={() => Linking.openURL(URL_CONSENTDATA_POLICY)}
                     >
                         Tratamiento de Datos
                     </Text>                    
