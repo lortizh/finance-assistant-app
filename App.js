@@ -12,6 +12,7 @@ import SignIn from "./src/components/SignIn";  // Otro componente personalizado 
 import ConfirmSignUp from "./src/components/ConfirmSignUp";
 import ForgotPassword from "./src/components/ForgotPassword";
 import ResetPassword from "./src/components/ResetPassword";
+import ExpenseControlScreen from "./src/components/ExpenseControlScreen"; // Importar la nueva pantalla
 
 const Stack = createStackNavigator();
 
@@ -36,26 +37,33 @@ const App = () => {
         <NavigationContainer>
             <Stack.Navigator>
                 {user ? (
-                    // Si el usuario está autenticado, muestra la pantalla de Chat y el botón de cerrar sesión
-                    <Stack.Screen
-                        name="ChatScreen"
-                        component={ChatScreen}
-                        options={{
-                            headerTitle: () => (
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Money Mentor</Text>
-                                    <Image
-                                        source={require('./src/assets/images/logo.png')}
-                                        style={{ width: 60, height: 60 }}
-                                    />
-                                </View>
-                            ),
-                            headerRight: () => (                                
-                                <Text style={{ fontSize: 20, fontWeight: 'bold' }}>By FinanceTeach</Text>
-                            ),
-                        }}
-                
-                    />
+                    // Si el usuario está autenticado, muestra las pantallas de la app
+                    <>
+                        <Stack.Screen
+                            name="ChatScreen"
+                            component={ChatScreen}
+                            options={{
+                                headerTitle: () => (
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Money Mentor</Text>
+                                        <Image
+                                            source={require('./src/assets/images/logo.png')}
+                                            style={{ width: 60, height: 60 }}
+                                        />
+                                    </View>
+                                ),
+                                headerRight: () => (
+                                    <Text style={{ fontSize: 20, fontWeight: 'bold' }}>By FinanceTeach</Text>
+                                ),
+                            }}
+
+                        />
+                        <Stack.Screen
+                            name="ExpenseControlScreen"
+                            component={ExpenseControlScreen}
+                            options={{ title: 'Control de Gastos' }} // Añadir título a la pantalla
+                        />
+                    </>
 
                 ) : (
                     // Si el usuario no está autenticado, muestra las pantallas de SignUp o SignIn

@@ -34,7 +34,7 @@ const ChatScreen = () => {
       console.info("::: inputText :::", inputText);
       const requestBody = {
         // Your request body data
-        pregunta: inputText
+        user_query: inputText
       };
       console.log("::: Request Body :::", requestBody);
       console.info("<<<>>>");
@@ -50,6 +50,7 @@ const ChatScreen = () => {
           body: JSON.stringify(requestBody),
         });
 
+        console.log("::: Response :::", response.body);
         const data = await response.json();
         const aiResponse= data.respuesta;
         setMessages([...newMessages, { text: aiResponse, sender: 'ai' }]);
@@ -83,10 +84,16 @@ const ChatScreen = () => {
         <Text style={styles.buttonText}>ENVIAR</Text>
       </TouchableOpacity>
 
-      {/* Footer con el botón de Cerrar sesión */}
+      {/* Footer con botones */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.signOutButton} onPress={signOut}>
-          <Text style={styles.signOutButtonText}>Cerrar sesión</Text>
+        <TouchableOpacity
+          style={styles.footerButton}
+          onPress={() => navigation.navigate('ExpenseControlScreen')}
+        >
+          <Text style={styles.footerButtonText}>Control de Gastos</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.footerButton, styles.signOutButton]} onPress={signOut}>
+          <Text style={styles.footerButtonText}>Cerrar sesión</Text>
         </TouchableOpacity>
       </View>
 
@@ -135,22 +142,28 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
     marginTop: 10,
     paddingVertical: 10,
-    alignItems: 'center',
     borderTopWidth: 1,
     borderTopColor: '#ccc',
   },
-  signOutButton: {
-    backgroundColor: '#FF6347', // Color de fondo personalizado
+  footerButton: {
+    backgroundColor: '#007BFF',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
+    minWidth: 140,
+    alignItems: 'center',
   },
-  signOutButtonText: {
-    color: '#FFFFFF', // Color del texto
+  footerButtonText: {
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  signOutButton: {
+    backgroundColor: '#FF6347',
   },
 });
 
