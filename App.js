@@ -16,6 +16,32 @@ import ExpenseControlScreen from "./src/components/ExpenseControlScreen"; // Imp
 
 const Stack = createStackNavigator();
 
+// Definir opciones de header compartidas
+const sharedHeaderOptions = {
+    headerTitleAlign: 'center', // Centrar el título
+    headerTitle: () => (
+        <View style={{ 
+            flexDirection: 'row', 
+            alignItems: 'center', 
+            gap: 8 // Añadir espacio entre texto e imagen
+            // Quitar justifyContent y width fijo
+        }}>
+            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Money Mentor</Text>
+            <Image
+                source={require('./src/assets/images/logo.png')} 
+                style={{ width: 40, height: 40, resizeMode: 'contain' }} 
+            />
+        </View>
+    ),
+    // headerRight: () => (
+    //     <Text style={{ fontSize: 16, fontWeight: 'bold', marginRight: 10 }}>By FinanceTeach</Text>
+    // ),
+    headerStyle: {
+        // backgroundColor: '#f4511e',
+    },
+    headerTintColor: '#000',
+};
+
 const App = () => {
     const [user, setUser] = useState(null);
 
@@ -42,26 +68,12 @@ const App = () => {
                         <Stack.Screen
                             name="ChatScreen"
                             component={ChatScreen}
-                            options={{
-                                headerTitle: () => (
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Money Mentor</Text>
-                                        <Image
-                                            source={require('./src/assets/images/logo.png')}
-                                            style={{ width: 60, height: 60 }}
-                                        />
-                                    </View>
-                                ),
-                                headerRight: () => (
-                                    <Text style={{ fontSize: 20, fontWeight: 'bold' }}>By FinanceTeach</Text>
-                                ),
-                            }}
-
+                            options={sharedHeaderOptions} // Usar opciones compartidas
                         />
                         <Stack.Screen
                             name="ExpenseControlScreen"
                             component={ExpenseControlScreen}
-                            options={{ title: 'Control de Gastos' }} // Añadir título a la pantalla
+                            options={sharedHeaderOptions} // Usar opciones compartidas
                         />
                     </>
 
