@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, FlatList, Text, TouchableOpacity, StyleSheet, Button } from 'react-native';
+import { View, TextInput, FlatList, Text, TouchableOpacity, StyleSheet, Button, Image } from 'react-native';
 import { Auth } from 'aws-amplify';
 import { useNavigation } from '@react-navigation/native';
 
@@ -9,8 +9,8 @@ import { API_URL } from '@env';
 const ChatScreen = () => {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
-
-  const navigation = useNavigation(); // Hook para la navegación
+  const navigation = useNavigation();
+  const [isAiTyping, setIsAiTyping] = useState(false);
 
   const signOut = async () => {
     try {
@@ -27,12 +27,16 @@ const ChatScreen = () => {
     const idToken  = session.getIdToken().getJwtToken();
 
     if (inputText.trim()) {
-      // Agregar el mensaje del usuario al estado
-      const newMessages = [...messages, { text: inputText, sender: 'user' }];
-      setMessages(newMessages);
-      const currentInput = inputText; // Guardar el valor antes de limpiar
-      setInputText(''); // Limpiar input inmediatamente
-      console.info("::: inputText :::", currentInput);
+      const userMessage = { 
+        text: inputText, 
+        sender: 'user', 
+        timestamp: new Date() 
+      };
+      setMessages(prevMessages => [...prevMessages, userMessage]);
+      const currentInput = inputText;
+      setInputText('');
+      setIsAiTyping(true);
+
       const requestBody = {
         user_query: currentInput
       };
@@ -53,22 +57,60 @@ const ChatScreen = () => {
         console.log("::: Response :::", response.body);
         const data = await response.json();
         const aiResponse= data.respuesta;
-        setMessages(prevMessages => [...prevMessages, { text: aiResponse, sender: 'ai' }]);
+        const aiMessage = {
+          text: aiResponse, 
+          sender: 'ai', 
+          timestamp: new Date()
+        };
+        setMessages(prevMessages => [...prevMessages, aiMessage]);
       } catch (error) {
         console.error("Error al interactuar con la IA:", error);
-        // Opcional: Volver a poner el mensaje del usuario en el input si falla el envío
-        // setInputText(currentInput);
-        // Opcional: Añadir un mensaje de error al chat
-        // setMessages(prevMessages => [...prevMessages, { text: "Error al enviar mensaje. Intenta de nuevo.", sender: 'ai' }]);
+        const errorMessage = {
+          text: "Oops! No pude procesar tu solicitud.", 
+          sender: 'ai',
+          timestamp: new Date()
+        };
+        setMessages(prevMessages => [...prevMessages, errorMessage]);
+      } finally {
+        setIsAiTyping(false);
       }
     }
   };
 
-  const renderItem = ({ item }) => (
-    <View style={[styles.message, item.sender === 'user' ? styles.userMessage : styles.aiMessage]}>
-      <Text>{item.text}</Text>
-    </View>
-  );
+  const renderItem = ({ item }) => {
+    const isUser = item.sender === 'user';
+
+    // Placeholder para Avatares
+    const Avatar = ({ sender }) => (
+      <View style={[styles.avatarContainer, sender === 'user' ? styles.userAvatar : styles.aiAvatar]}>
+        <Text style={styles.avatarText}>{sender === 'user' ? 'U' : 'IA'}</Text>
+      </View>
+    );
+
+    let displayTime = '';
+    if (item.timestamp instanceof Date) {
+      displayTime = item.timestamp.toLocaleTimeString('en-US', { 
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true 
+      });
+    }
+
+    return (
+      <View style={[styles.messageRow, isUser ? styles.userMessageRow : styles.aiMessageRow]}>
+        {!isUser && <Avatar sender="ai" />}
+        <View style={[styles.messageBubble, isUser ? styles.userMessageBubble : styles.aiMessageBubble]}>
+          <Text style={isUser ? styles.userMessageText : styles.aiMessageText}>{item.text}</Text>
+          {displayTime ? (
+            <Text style={[styles.timestampText, isUser ? styles.userTimestamp : styles.aiTimestamp]}>
+              {displayTime}
+            </Text>
+          ) : null}
+        </View>
+        {isUser && <Avatar sender="user" />}
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -77,7 +119,13 @@ const ChatScreen = () => {
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
         style={styles.chatContainer}
+        contentContainerStyle={{ paddingBottom: 10 }}
       />
+      {isAiTyping && (
+        <View style={styles.typingIndicatorContainer}>
+          <Text style={styles.typingIndicatorText}>Money Mentor está escribiendo...</Text>
+        </View>
+      )}
       <TextInput
         style={styles.input}
         placeholder="Consulta a Money Mentor o Registra un gasto/ingreso..."
@@ -117,6 +165,54 @@ const styles = StyleSheet.create({
   chatContainer: {
     flex: 1,
   },
+  messageRow: {
+    flexDirection: 'row',
+    marginVertical: 8,
+    alignItems: 'flex-end',
+  },
+  userMessageRow: {
+    justifyContent: 'flex-end',
+  },
+  aiMessageRow: {
+    justifyContent: 'flex-start',
+  },
+  avatarContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 8,
+  },
+  userAvatar: {
+    backgroundColor: '#007AFF',
+  },
+  aiAvatar: {
+    backgroundColor: '#FFA500',
+  },
+  avatarText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  messageBubble: {
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 18,
+    maxWidth: '75%',
+  },
+  userMessageBubble: {
+    backgroundColor: '#daf8e3',
+  },
+  aiMessageBubble: {
+    backgroundColor: '#f1f0f0',
+  },
+  userMessageText: {
+    color: '#000',
+  },
+  aiMessageText: {
+    color: '#000',
+  },
   input: {
     height: 40,
     borderColor: '#ccc',
@@ -124,22 +220,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginVertical: 10,
   },
-  message: {
-    padding: 10,
-    borderRadius: 5,
-    marginVertical: 5,
-    maxWidth: '80%',
-  },
-  userMessage: {
-    alignSelf: 'flex-end',
-    backgroundColor: '#daf8e3',
-  },
-  aiMessage: {
-    alignSelf: 'flex-start',
-    backgroundColor: '#f1f0f0',
-  },
   button: {
-    backgroundColor: '#FFA500', // Cambia el color del botón aquí
+    backgroundColor: '#FFA500',
     paddingVertical: 10,
     alignItems: 'center',
     borderRadius: 5,
@@ -171,6 +253,27 @@ const styles = StyleSheet.create({
   },
   signOutButton: {
     backgroundColor: '#FF6347',
+  },
+  typingIndicatorContainer: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    alignSelf: 'flex-start',
+  },
+  typingIndicatorText: {
+    fontSize: 14,
+    color: '#666',
+    fontStyle: 'italic',
+  },
+  timestampText: {
+    fontSize: 10,
+    color: '#666',
+    marginTop: 4,
+  },
+  userTimestamp: {
+    alignSelf: 'flex-end',
+  },
+  aiTimestamp: {
+    alignSelf: 'flex-start',
   },
 });
 
