@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Amplify, Auth } from 'aws-amplify';
 import awsconfig from './src/aws-exports';
 Amplify.configure(awsconfig);
@@ -19,25 +19,40 @@ const Stack = createStackNavigator();
 const getSharedHeaderOptions = (user) => {
   let userEmail = user?.attributes?.email || null;
 
+  const handleSignOut = async () => {
+    try {
+      await Auth.signOut();
+      if (typeof window !== 'undefined' && window.location) {
+          window.location.reload();
+      }
+    } catch (error) {
+      console.log("Error al cerrar sesión:", error);
+      Alert.alert("Error", "No se pudo cerrar la sesión.");
+    }
+  };
+
   return {
-    headerTitleAlign: 'center',
-    headerTitle: () => (
-        // Logo y Texto juntos para que se centren como un bloque
-        <View style={styles.headerTitleGroupContainer}>
-            <Image
-                source={require('./src/assets/images/logo.png')}
-                style={styles.headerLogo}
-            />
-            <Text style={styles.headerTitleText}>Money Mentor</Text>
-        </View>
+    headerLeft: () => (
+        <Image
+            source={require('./src/assets/images/logo.png')}
+            style={styles.headerLogoLeft}
+        />
     ),
-    // No definir headerLeft aquí para permitir el botón de retroceso por defecto
+    headerTitle: () => (
+        <Text style={styles.headerTitleText}>Money Mentor</Text>
+    ),
     headerRight: () => (
-      userEmail ? (
-        <View style={styles.headerRightContainer}>
-          <Text style={styles.userEmailText}>{userEmail}</Text>
-        </View>
-      ) : null
+      <View style={styles.headerRightContainer}>
+        {userEmail && (
+            <Text style={styles.userEmailText} numberOfLines={1}>{userEmail}</Text>
+        )}
+        <TouchableOpacity onPress={handleSignOut} style={styles.logoutButton}>
+          <Image 
+            source={require('./src/assets/images/close_session.png')} 
+            style={styles.logoutIcon}
+          />
+        </TouchableOpacity>
+      </View>
     ),
     headerStyle: {
         // backgroundColor: '#f4511e',
@@ -77,13 +92,7 @@ const App = () => {
                         <Stack.Screen
                             name="ExpenseControlScreen"
                             component={ExpenseControlScreen}
-                            options={(props) => ({ // Usar función para acceder a props.navigation
-                                ...getSharedHeaderOptions(user),
-                                // Opciones específicas para ExpenseControlScreen si fueran necesarias
-                                // Por ejemplo, si ChatScreen NO debe tener botón de back pero Expense SÍ:
-                                // headerLeft: props.navigation.canGoBack() ? undefined : () => null, // Lógica compleja
-                                // La forma más simple es que React Nav lo maneje por defecto
-                            })}
+                            options={getSharedHeaderOptions(user)}
                         />
                     </>
 
@@ -109,28 +118,37 @@ const App = () => {
 
 // --- AJUSTE: Añadir estilos para el header --- 
 const styles = StyleSheet.create({
-    headerTitleGroupContainer: { // Contenedor para el grupo de logo y texto en el título
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 8, // Espacio entre logo y texto
-    },
-    headerLogo: { // Estilo solo para el logo cuando está junto al título
-        width: 30, // Un poco más pequeño para que quepa bien
-        height: 30,
+    headerLogoLeft: { // Estilo para el logo en la izquierda
+        width: 40,
+        height: 40,
         resizeMode: 'contain',
+        marginLeft: 15, // Espacio desde el borde izquierdo (o desde el botón de back)
     },
     headerTitleText: {
-        fontSize: 20,
+        fontSize: 18, // Ligeramente más pequeño para dar espacio
         fontWeight: 'bold',
         color: '#000',
+        // React Navigation intentará centrarlo en el espacio disponible
+        // O puedes forzar alineación: textAlign: 'left', marginLeft: -X (ajuste manual)
     },
     headerRightContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
         marginRight: 15,
-        alignItems: 'flex-end',
     },
     userEmailText: {
         fontSize: 12,
         color: '#333',
+        marginRight: 8,
+        maxWidth: 100,
+    },
+    logoutButton: {
+        padding: 5,
+    },
+    logoutIcon: {
+        width: 22,
+        height: 22,
+        resizeMode: 'contain',
     },
 });
 // --- FIN AJUSTE ---

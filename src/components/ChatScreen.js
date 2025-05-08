@@ -113,45 +113,48 @@ const ChatScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={messages}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => index.toString()}
-        style={styles.chatContainer}
-        contentContainerStyle={{ paddingBottom: 10 }}
-      />
-      {isAiTyping && (
-        <View style={styles.typingIndicatorContainer}>
-          <Text style={styles.typingIndicatorText}>Money Mentor está escribiendo...</Text>
-        </View>
-      )}
-      <TextInput
-        style={styles.input}
-        placeholder="Consulta a Money Mentor o Registra un gasto/ingreso..."
-        value={inputText}
-        onChangeText={setInputText}
-        onSubmitEditing={sendMessage}
-        blurOnSubmit={false}
-        returnKeyType="send"
-      />
-      <TouchableOpacity style={styles.button} onPress={sendMessage}>
-        <Text style={styles.buttonText}>ENVIAR</Text>
-      </TouchableOpacity>
+    <View style={{flex: 1}}>
+      <View style={styles.container}>
+        <FlatList
+          data={messages}
+          renderItem={renderItem}
+          keyExtractor={(item, index) => index.toString()}
+          style={styles.chatContainer}
+          contentContainerStyle={{ paddingBottom: 10 }}
+        />
+        {isAiTyping && (
+          <View style={styles.typingIndicatorContainer}>
+            <Text style={styles.typingIndicatorText}>Money Mentor está escribiendo...</Text>
+          </View>
+        )}
+        <TextInput
+          style={styles.input}
+          placeholder="Consulta a Money Mentor o Registra un gasto/ingreso..."
+          value={inputText}
+          onChangeText={setInputText}
+          onSubmitEditing={sendMessage}
+          blurOnSubmit={false}
+          returnKeyType="send"
+        />
+        <TouchableOpacity style={styles.button} onPress={sendMessage}>
+          <Text style={styles.buttonText}>ENVIAR</Text>
+        </TouchableOpacity>
 
-      {/* Footer con botones */}
-      <View style={styles.footer}>
-        <TouchableOpacity
-          style={styles.footerButton}
-          onPress={() => navigation.navigate('ExpenseControlScreen')}
-        >
-          <Text style={styles.footerButtonText}>Control de Gastos</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.footerButton, styles.signOutButton]} onPress={signOut}>
-          <Text style={styles.footerButtonText}>Cerrar sesión</Text>
-        </TouchableOpacity>
+        <View style={styles.footer}>
+          
+        </View>
       </View>
 
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => navigation.navigate('ExpenseControlScreen')}
+      >
+        <Image 
+          source={require('../assets/images/expense_button.png')}
+          style={styles.fabIcon}
+        />
+        <Text style={styles.fabText}>Gastos</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -232,19 +235,17 @@ const styles = StyleSheet.create({
   },
   footer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
     marginTop: 10,
     paddingVertical: 10,
     borderTopWidth: 1,
     borderTopColor: '#ccc',
   },
   footerButton: {
-    backgroundColor: '#007BFF',
     paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    minWidth: 140,
+    borderRadius: 5,
     alignItems: 'center',
+    paddingHorizontal: 25,
   },
   footerButtonText: {
     color: '#FFFFFF',
@@ -274,6 +275,35 @@ const styles = StyleSheet.create({
   },
   aiTimestamp: {
     alignSelf: 'flex-start',
+  },
+  fab: {
+    position: 'absolute',
+    width: 65,
+    height: 65,
+    borderRadius: 35,
+    backgroundColor: '#6c757d',
+    justifyContent: 'center',
+    alignItems: 'center',
+    right: 20,
+    bottom: 90,
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    paddingBottom: 2,
+  },
+  fabIcon: {
+    width: 28,
+    height: 28,
+    resizeMode: 'contain',
+    marginBottom: 2,
+  },
+  fabText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 

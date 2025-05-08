@@ -8,6 +8,7 @@ import { PieChart } from 'react-native-chart-kit';
 import { Auth } from 'aws-amplify';
 import { API_URL_SUMMARY, API_URL_EDIT_MOV } from '@env';
 import { Picker } from '@react-native-picker/picker';
+import { useNavigation } from '@react-navigation/native';
 
 const chartConfig = {
   color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
@@ -17,6 +18,7 @@ const chartConfig = {
 const ExpenseControlScreen = () => {
   const { width } = useWindowDimensions();
   const chartWidth = width - (styles.container.padding * 2 || 40);
+  const navigation = useNavigation();
 
   const [summaryData, setSummaryData] = useState({ balance: 0, movements: [] });
   const [loading, setLoading] = useState(true);
@@ -355,6 +357,14 @@ const ExpenseControlScreen = () => {
             </>
           )}
         </View>
+
+        <TouchableOpacity 
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Text style={styles.backButtonText}>Volver al Chat</Text>
+        </TouchableOpacity>
+
       </View>
     </ScrollView>
   );
@@ -610,6 +620,22 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 10,
     fontSize: 14,
+  },
+  backButton: {
+    backgroundColor: '#6c757d',
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 10,
+    alignSelf: 'stretch',
+    marginHorizontal: 15,
+  },
+  backButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 
