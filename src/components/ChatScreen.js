@@ -30,11 +30,11 @@ const ChatScreen = () => {
       // Agregar el mensaje del usuario al estado
       const newMessages = [...messages, { text: inputText, sender: 'user' }];
       setMessages(newMessages);
-      setInputText('');
-      console.info("::: inputText :::", inputText);
+      const currentInput = inputText; // Guardar el valor antes de limpiar
+      setInputText(''); // Limpiar input inmediatamente
+      console.info("::: inputText :::", currentInput);
       const requestBody = {
-        // Your request body data
-        user_query: inputText
+        user_query: currentInput
       };
       console.log("::: Request Body :::", requestBody);
       console.info("<<<>>>");
@@ -53,9 +53,13 @@ const ChatScreen = () => {
         console.log("::: Response :::", response.body);
         const data = await response.json();
         const aiResponse= data.respuesta;
-        setMessages([...newMessages, { text: aiResponse, sender: 'ai' }]);
+        setMessages(prevMessages => [...prevMessages, { text: aiResponse, sender: 'ai' }]);
       } catch (error) {
         console.error("Error al interactuar con la IA:", error);
+        // Opcional: Volver a poner el mensaje del usuario en el input si falla el envío
+        // setInputText(currentInput);
+        // Opcional: Añadir un mensaje de error al chat
+        // setMessages(prevMessages => [...prevMessages, { text: "Error al enviar mensaje. Intenta de nuevo.", sender: 'ai' }]);
       }
     }
   };
@@ -76,9 +80,12 @@ const ChatScreen = () => {
       />
       <TextInput
         style={styles.input}
-        placeholder="Escribe tu mensaje..."
+        placeholder="Consulta a Money Mentor o Registra un gasto/ingreso..."
         value={inputText}
         onChangeText={setInputText}
+        onSubmitEditing={sendMessage}
+        blurOnSubmit={false}
+        returnKeyType="send"
       />
       <TouchableOpacity style={styles.button} onPress={sendMessage}>
         <Text style={styles.buttonText}>ENVIAR</Text>

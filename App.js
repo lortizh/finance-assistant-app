@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { Button, View, Text, Image } from 'react-native';
+import { View, Text, Image, StyleSheet } from 'react-native';
 import { Amplify, Auth } from 'aws-amplify';
 import awsconfig from './src/aws-exports';
 Amplify.configure(awsconfig);
@@ -16,30 +16,34 @@ import ExpenseControlScreen from "./src/components/ExpenseControlScreen"; // Imp
 
 const Stack = createStackNavigator();
 
-// Definir opciones de header compartidas
-const sharedHeaderOptions = {
-    headerTitleAlign: 'center', // Centrar el título
+const getSharedHeaderOptions = (user) => {
+  let userEmail = user?.attributes?.email || null;
+
+  return {
+    headerTitleAlign: 'center',
     headerTitle: () => (
-        <View style={{ 
-            flexDirection: 'row', 
-            alignItems: 'center', 
-            gap: 8 // Añadir espacio entre texto e imagen
-            // Quitar justifyContent y width fijo
-        }}>
-            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Money Mentor</Text>
+        // Logo y Texto juntos para que se centren como un bloque
+        <View style={styles.headerTitleGroupContainer}>
             <Image
-                source={require('./src/assets/images/logo.png')} 
-                style={{ width: 40, height: 40, resizeMode: 'contain' }} 
+                source={require('./src/assets/images/logo.png')}
+                style={styles.headerLogo}
             />
+            <Text style={styles.headerTitleText}>Money Mentor</Text>
         </View>
     ),
-    // headerRight: () => (
-    //     <Text style={{ fontSize: 16, fontWeight: 'bold', marginRight: 10 }}>By FinanceTeach</Text>
-    // ),
+    // No definir headerLeft aquí para permitir el botón de retroceso por defecto
+    headerRight: () => (
+      userEmail ? (
+        <View style={styles.headerRightContainer}>
+          <Text style={styles.userEmailText}>{userEmail}</Text>
+        </View>
+      ) : null
+    ),
     headerStyle: {
         // backgroundColor: '#f4511e',
     },
-    headerTintColor: '#000',
+    headerTintColor: '#000', // Color para el botón de retroceso y título por defecto
+  };
 };
 
 const App = () => {
@@ -68,12 +72,18 @@ const App = () => {
                         <Stack.Screen
                             name="ChatScreen"
                             component={ChatScreen}
-                            options={sharedHeaderOptions} // Usar opciones compartidas
+                            options={getSharedHeaderOptions(user)}
                         />
                         <Stack.Screen
                             name="ExpenseControlScreen"
                             component={ExpenseControlScreen}
-                            options={sharedHeaderOptions} // Usar opciones compartidas
+                            options={(props) => ({ // Usar función para acceder a props.navigation
+                                ...getSharedHeaderOptions(user),
+                                // Opciones específicas para ExpenseControlScreen si fueran necesarias
+                                // Por ejemplo, si ChatScreen NO debe tener botón de back pero Expense SÍ:
+                                // headerLeft: props.navigation.canGoBack() ? undefined : () => null, // Lógica compleja
+                                // La forma más simple es que React Nav lo maneje por defecto
+                            })}
                         />
                     </>
 
@@ -96,5 +106,33 @@ const App = () => {
         </NavigationContainer>
     );
 };
+
+// --- AJUSTE: Añadir estilos para el header --- 
+const styles = StyleSheet.create({
+    headerTitleGroupContainer: { // Contenedor para el grupo de logo y texto en el título
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8, // Espacio entre logo y texto
+    },
+    headerLogo: { // Estilo solo para el logo cuando está junto al título
+        width: 30, // Un poco más pequeño para que quepa bien
+        height: 30,
+        resizeMode: 'contain',
+    },
+    headerTitleText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#000',
+    },
+    headerRightContainer: {
+        marginRight: 15,
+        alignItems: 'flex-end',
+    },
+    userEmailText: {
+        fontSize: 12,
+        color: '#333',
+    },
+});
+// --- FIN AJUSTE ---
 
 export default App;
